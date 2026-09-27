@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsDirect Pro - Direct Chat & Contact Manager</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: 'var(--color-50)',
+                            100: 'var(--color-100)',
+                            500: 'var(--color-500)',
+                            600: 'var(--color-600)',
+                            700: 'var(--color-700)',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            /* Default WhatsApp Emerald Theme */
+            --color-50: #ecfdf5;
+            --color-100: #d1fae5;
+            --color-500: #10b981;
+            --color-600: #059669;
+            --color-700: #047857;
+        }
+
+        /* Theme Presets */
+        [data-theme="emerald"] {
+            --color-50: #ecfdf5; --color-100: #d1fae5; --color-500: #10b981; --color-600: #059669; --color-700: #047857;
+        }
+        [data-theme="whatsapp"] {
+            --color-50: #f0fdf4; --color-100: #dcfce7; --color-500: #22c55e; --color-600: #16a34a; --color-700: #15803d;
+        }
+        [data-theme="teal"] {
+            --color-50: #f0fdfa; --color-100: #ccfbf1; --color-500: #14b8a6; --color-600: #0d9488; --color-700: #0f766e;
+        }
+        [data-theme="indigo"] {
+            --color-50: #eef2ff; --color-100: #e0e7ff; --color-500: #6366f1; --color-600: #4f46e5; --color-700: #4338ca;
+        }
+        [data-theme="purple"] {
+            --color-50: #faf5ff; --color-100: #f3e8ff; --color-500: #a855f7; --color-600: #9333ea; --color-700: #7e22ce;
+        }
+        [data-theme="sunset"] {
+            --color-50: #fff7ed; --color-100: #ffedd5; --color-500: #f97316; --color-600: #ea580c; --color-700: #c2410c;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(156, 163, 175, 0.4);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(156, 163, 175, 0.7);
+        }
+
+        .glass-header {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        /* Subtle Pulse Animation for WhatsApp Action */
+        @keyframes subtle-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .hover-pulse:hover {
+            animation: subtle-pulse 1s infinite ease-in-out;
+        }
+    </style>
+
+    <!-- Progressive Web App Meta Tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#16a34a">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png"></head>
+
+<body class="bg-gray-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-200 font-sans flex flex-col">
+
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-700/60 glass-header transition-colors">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 h-13 py-2 flex items-center justify-between gap-2.5">
+            <!-- App Logo / Title -->
+            <div class="flex items-center gap-2 cursor-pointer" onclick="resetSearch()">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-600 to-brand-500 flex items-center justify-center text-white shadow-sm shadow-brand-500/20">
+                    <i class="fa-brands font-bold fa-whatsapp text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-sm leading-tight tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
+                        WhatsDirect
+                        <span class="text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.2 rounded bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-400">Pro</span>
+                    </h1>
+                    <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Direct Chat & Contact Saver</p>
+                </div>
+            </div>
+
+            <!-- Top Actions -->
+            <div class="flex items-center gap-1.5">
+                <!-- Add New Number Button -->
+                <button onclick="openContactModal()" class="flex items-center gap-1.5 bg-brand-600 hover:bg-brand-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-semibold shadow-sm shadow-brand-600/30 transition active:scale-95">
+                    <i class="fa-solid fa-user-plus text-[10px]"></i>
+                    <span class="hidden sm:inline">Add New Number</span>
+                    <span class="sm:hidden">Add</span>
+                </button>
+
+                <!-- Settings / Menu Dropdown Toggle -->
+                <div class="relative">
+                    <button id="menuBtn" onclick="toggleMenuDropdown(event)" class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100/80 dark:bg-slate-700/60 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center transition focus:outline-none">
+                        <i class="fa-solid fa-ellipsis-vertical text-sm"></i>
+                    </button>
+
+                    <!-- Dropdown Content -->
+                    <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-slate-800 shadow-xl border border-slate-200/80 dark:border-slate-700/80 py-2 z-50 transform origin-top-right transition-all">
+                        
+                        <!-- Dark Mode Toggle Option -->
+                        <button onclick="toggleDarkMode()" class="w-full px-4 py-2.5 text-left text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 flex items-center justify-between transition">
+                            <span class="flex items-center gap-2.5">
+                                <i id="darkModeMenuIcon" class="fa-solid fa-moon w-4 text-slate-500 dark:text-slate-400"></i>
+                                Dark Mode
+                            </span>
+                            <span id="darkModeStatusText" class="text-xs text-slate-400 uppercase font-semibold">Off</span>
+                        </button>
+
+                        <!-- Theme Colors Option -->
+                        <div class="px-4 py-2 border-t border-slate-100 dark:border-slate-700/50">
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">App Theme</p>
+                            <div class="grid grid-cols-6 gap-1.5">
+                                <button onclick="setAppTheme('emerald')" class="w-6 h-6 rounded-full bg-emerald-500 ring-2 ring-offset-1 ring-emerald-500/0 hover:scale-110 transition" title="Emerald"></button>
+                                <button onclick="setAppTheme('whatsapp')" class="w-6 h-6 rounded-full bg-green-500 hover:scale-110 transition" title="WhatsApp Green"></button>
+                                <button onclick="setAppTheme('teal')" class="w-6 h-6 rounded-full bg-teal-500 hover:scale-110 transition" title="Teal"></button>
+                                <button onclick="setAppTheme('indigo')" class="w-6 h-6 rounded-full bg-indigo-500 hover:scale-110 transition" title="Indigo"></button>
+                                <button onclick="setAppTheme('purple')" class="w-6 h-6 rounded-full bg-purple-500 hover:scale-110 transition" title="Purple"></button>
+                                <button onclick="setAppTheme('sunset')" class="w-6 h-6 rounded-full bg-orange-500 hover:scale-110 transition" title="Sunset"></button>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-slate-100 dark:border-slate-700/50 my-1"></div>
+
+                        <!-- Trash Bin Option -->
+                        <button onclick="openTrashModal()" class="w-full px-4 py-2.5 text-left text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 flex items-center justify-between transition">
+                            <span class="flex items-center gap-2.5">
+                                <i class="fa-solid fa-trash-can w-4 text-red-500"></i>
+                                Trash Bin
+                            </span>
+                            <span id="trashBadge" class="px-2 py-0.5 text-xs font-bold rounded-full bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400">0</span>
+                        </button>
+
+                        <div class="border-t border-slate-100 dark:border-slate-700/50 my-1"></div>
+
+                        <!-- Backup JSON Option -->
+                        <button onclick="exportBackupJSON()" class="w-full px-4 py-2.5 text-left text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 flex items-center gap-2.5 transition">
+                            <i class="fa-solid fa-file-export w-4 text-brand-600 dark:text-brand-400"></i>
+                            Backup JSON
+                        </button>
+
+                        <!-- Restore JSON Option -->
+                        <label class="w-full px-4 py-2.5 text-left text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 flex items-center gap-2.5 cursor-pointer transition">
+                            <i class="fa-solid fa-file-import w-4 text-blue-500"></i>
+                            Restore JSON
+                            <input type="file" id="jsonFileInput" accept=".json" class="hidden" onchange="importBackupJSON(event)">
+                        </label>
+
+                        <div class="border-t border-slate-100 dark:border-slate-700/50 my-1"></div>
+
+                        <!-- Developer Info -->
+                        <div class="px-4 py-2 bg-slate-50/80 dark:bg-slate-900/40 text-center rounded-b-2xl">
+                            <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                                App by <span class="font-bold text-slate-800 dark:text-slate-100">Junaid Gillani</span>
+                            </p>
+                            <a href="https://wa.me/923176407904" target="_blank" class="inline-flex items-center gap-1 text-[11px] font-bold text-brand-600 dark:text-brand-400 hover:underline mt-0.5">
+                                <i class="fa-brands fa-whatsapp text-emerald-500"></i>
+                                <span>03176407904</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex-1 w-full">
+
+        <!-- Search Bar & Direct Quick WhatsApp Launcher -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
+            <!-- Search Saved Contacts -->
+            <div class="md:col-span-2 relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Search contacts by name or phone..." class="w-full pl-8 pr-8 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/50 dark:text-white transition shadow-sm">
+                <button id="clearSearchBtn" onclick="resetSearch()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Instant WhatsApp Quick Launch -->
+            <div class="flex gap-1.5">
+                <input type="tel" id="quickPhoneInput" placeholder="Direct number (e.g. 92300...)" class="w-full px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/50 dark:text-white transition shadow-sm">
+                <button onclick="launchQuickWhatsApp()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg font-medium text-xs flex items-center gap-1.5 whitespace-nowrap shadow-sm shadow-emerald-600/30 transition active:scale-95">
+                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                    <span>Chat</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Contacts Stats Header -->
+        <div class="flex items-center justify-between mb-3 px-0.5">
+            <h2 class="text-xs font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <span>Saved Contacts</span>
+                <span id="contactCountBadge" class="bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-1.5 py-0.2 rounded-full text-[11px] font-extrabold">0</span>
+            </h2>
+            <p class="text-[11px] text-slate-400">Photos auto-compressed (~10KB max)</p>
+        </div>
+
+        <!-- Contacts Grid Container -->
+        <div id="contactsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Dynamic contacts cards will be rendered here -->
+        </div>
+
+        <!-- Empty State View -->
+        <div id="emptyState" class="hidden flex-col items-center justify-center text-center py-16 px-4 bg-white dark:bg-slate-800/50 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 my-4">
+            <div class="w-16 h-16 rounded-2xl bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400 flex items-center justify-center text-3xl mb-3 shadow-inner">
+                <i class="fa-solid fa-address-book"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-1">No Saved Numbers Found</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400 max-w-xs mb-5">Start saving contacts with custom pictures, names, and direct WhatsApp / Call shortcuts!</p>
+            <button onclick="openContactModal()" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-brand-600/30 transition flex items-center gap-2">
+                <i class="fa-solid fa-plus"></i>
+                <span>Add First Contact</span>
+            </button>
+        </div>
+    </main>
+
+    <!-- Modal: Add / Edit Contact -->
+    <div id="contactModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 dark:border-slate-700 transform transition-all scale-95 opacity-0 modal-card">
+            
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-700">
+                <h3 id="modalTitle" class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-user-plus text-brand-600"></i>
+                    Add New Number
+                </h3>
+                <button onclick="closeContactModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 hover:text-slate-800 dark:hover:text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="contactForm" onsubmit="saveContact(event)" class="mt-5 space-y-4">
+                <input type="hidden" id="contactId">
+
+                <!-- Profile Picture Uploader & Compressed Preview -->
+                <div class="flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-700/40 rounded-2xl border border-slate-200/80 dark:border-slate-700">
+                    <div class="relative group">
+                        <img id="picturePreview" src="https://placehold.co/100x100/e2e8f0/64748b?text=User" alt="Preview" class="w-16 h-16 rounded-full object-cover border-2 border-brand-500/30 shadow-sm">
+                        <label for="pictureInput" class="absolute inset-0 bg-slate-900/40 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition cursor-pointer">
+                            <i class="fa-solid fa-camera text-sm"></i>
+                        </label>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Contact Photo</label>
+                        <input type="file" id="pictureInput" accept="image/*" onchange="handleImageUpload(event)" class="text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 dark:file:bg-brand-900/50 dark:file:text-brand-300 hover:file:bg-brand-100 cursor-pointer">
+                        <div class="flex items-center justify-between mt-1 text-[11px] text-slate-400">
+                            <span>Auto-compressed image</span>
+                            <span id="imageSizeTag" class="font-bold text-brand-600 dark:text-brand-400">~0 KB</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Name Input -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Full Name *</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="nameInput" required placeholder="Enter contact name..." class="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white transition">
+                    </div>
+                </div>
+
+                <!-- Phone Input with Country Code -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Phone Number (With Country Code) *</label>
+                    <div class="flex gap-2">
+                        <select id="countryCodeSelect" class="bg-slate-50 dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600 rounded-xl text-sm px-2 py-2.5 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            <option value="+92">🇵🇰 +92</option>
+                            <option value="+91">🇮🇳 +91</option>
+                            <option value="+1">🇺🇸 +1</option>
+                            <option value="+44">🇬🇧 +44</option>
+                            <option value="+971">🇦🇪 +971</option>
+                            <option value="+966">🇸🇦 +966</option>
+                            <option value="">Other / Custom</option>
+                        </select>
+                        <div class="relative flex-1">
+                            <i class="fa-solid fa-phone absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input type="tel" id="phoneInput" required placeholder="300 1234567..." class="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white transition">
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-1">Number will be formatted automatically for WhatsApp link</p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-3 pt-3">
+                    <button type="button" onclick="closeContactModal()" class="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm shadow-md shadow-brand-600/30 transition">
+                        Save Contact
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Enlarged Image View / Lightbox -->
+    <div id="imageModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md transition-opacity" onclick="closeImageModal()">
+        <div class="relative max-w-lg w-full flex flex-col items-center p-2" onclick="event.stopPropagation()">
+            <!-- Close Button -->
+            <button onclick="closeImageModal()" class="absolute -top-12 right-0 w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition backdrop-blur-sm">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            
+            <!-- Contact Header Info in Lightbox -->
+            <div class="mb-3 text-center text-white">
+                <h3 id="imageModalName" class="font-bold text-lg leading-tight">Contact Name</h3>
+                <p id="imageModalPhone" class="text-xs text-slate-300 font-mono"></p>
+            </div>
+
+            <!-- Enlarged Image Container -->
+            <div class="relative bg-slate-900 rounded-3xl overflow-hidden border border-white/10 shadow-2xl max-h-[75vh] flex items-center justify-center w-full">
+                <img id="enlargedImage" src="" alt="Enlarged Picture" class="max-h-[75vh] w-auto max-w-full object-contain">
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Trash Bin -->
+    <div id="trashModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-100 dark:border-slate-700 flex flex-col max-h-[85vh]">
+            
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-700">
+                <div class="flex items-center gap-2">
+                    <div class="w-9 h-9 rounded-xl bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-400 flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Trash Bin</h3>
+                        <p class="text-xs text-slate-400">Items permanently delete after 30 days automatically</p>
+                    </div>
+                </div>
+                <button onclick="closeTrashModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 hover:text-slate-800 dark:hover:text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Trash Items List -->
+            <div id="trashContainer" class="my-4 flex-1 overflow-y-auto space-y-3 pr-1">
+                <!-- Dynamically filled -->
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
+                <button onclick="emptyTrashAll()" class="text-xs font-bold text-red-600 dark:text-red-400 hover:underline flex items-center gap-1.5">
+                    <i class="fa-solid fa-dumpster"></i>
+                    Empty Trash Now
+                </button>
+                <button onclick="closeTrashModal()" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-semibold hover:bg-slate-200 transition">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast Container -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        let contacts = [];
+        let trash = [];
+        let currentTheme = 'emerald';
+        let isDarkMode = false;
+        let selectedPictureData = '';
+
+        // Initial Load on Window Loaded
+        window.onload = function() {
+            loadFromLocalStorage();
+            cleanOldTrashItems();
+            applyThemeSettings();
+            renderContacts();
+            updateTrashBadge();
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(e) {
+                const menuBtn = document.getElementById('menuBtn');
+                const menuDropdown = document.getElementById('menuDropdown');
+                if (menuDropdown && !menuBtn.contains(e.target) && !menuDropdown.contains(e.target)) {
+                    menuDropdown.classList.add('hidden');
+                }
+                
+                // Close action menus on cards
+                document.querySelectorAll('.card-menu').forEach(menu => {
+                    if (!menu.contains(e.target) && !menu.previousElementSibling.contains(e.target)) {
+                        menu.classList.add('hidden');
+                    }
+                });
+            });
+        };
+
+        function loadFromLocalStorage() {
+            try {
+                const savedContacts = localStorage.getItem('whatsdirect_contacts');
+                const savedTrash = localStorage.getItem('whatsdirect_trash');
+                const savedTheme = localStorage.getItem('whatsdirect_theme');
+                const savedDarkMode = localStorage.getItem('whatsdirect_darkmode');
+
+                if (savedContacts) contacts = JSON.parse(savedContacts);
+                if (savedTrash) trash = JSON.parse(savedTrash);
+                if (savedTheme) currentTheme = savedTheme;
+                if (savedDarkMode !== null) isDarkMode = JSON.parse(savedDarkMode);
+            } catch (err) {
+                console.error("Failed to parse LocalStorage data:", err);
+                showToast("Error loading saved data", "error");
+            }
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('whatsdirect_contacts', JSON.stringify(contacts));
+            localStorage.setItem('whatsdirect_trash', JSON.stringify(trash));
+            localStorage.setItem('whatsdirect_theme', currentTheme);
+            localStorage.setItem('whatsdirect_darkmode', JSON.stringify(isDarkMode));
+            updateTrashBadge();
+        }
+
+        /* Automatically permanently delete items older than 30 days in Trash */
+        function cleanOldTrashItems() {
+            const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+            const now = Date.now();
+            const initialCount = trash.length;
+
+            trash = trash.filter(item => {
+                const deletedAt = item.deletedAt || now;
+                return (now - deletedAt) < THIRTY_DAYS_MS;
+            });
+
+            if (trash.length < initialCount) {
+                saveToLocalStorage();
+                console.log(`Auto-cleaned ${initialCount - trash.length} expired item(s) from trash.`);
+            }
+        }
+
+        function setAppTheme(themeName) {
+            currentTheme = themeName;
+            applyThemeSettings();
+            saveToLocalStorage();
+            showToast(`Theme changed to ${themeName.toUpperCase()}`);
+        }
+
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            applyThemeSettings();
+            saveToLocalStorage();
+        }
+
+        function applyThemeSettings() {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            
+            const darkIcon = document.getElementById('darkModeMenuIcon');
+            const darkText = document.getElementById('darkModeStatusText');
+
+            if (isDarkMode) {
+                document.documentElement.classList.add('dark');
+                if (darkIcon) darkIcon.className = 'fa-solid fa-sun w-4 text-amber-400';
+                if (darkText) darkText.innerText = 'ON';
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (darkIcon) darkIcon.className = 'fa-solid fa-moon w-4 text-slate-500';
+                if (darkText) darkText.innerText = 'OFF';
+            }
+        }
+
+        function toggleMenuDropdown(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('menuDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    // Create HTML Canvas for resizing and compression
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+
+                    // Max dimensions 160x160 for small fast profile pictures
+                    const MAX_WIDTH = 160;
+                    const MAX_HEIGHT = 160;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Compress canvas image to JPEG quality 0.55 (~8-12 KB max)
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.55);
+                    selectedPictureData = compressedDataUrl;
+
+                    document.getElementById('picturePreview').src = compressedDataUrl;
+
+                    // Calculate estimated KB size
+                    const stringLength = compressedDataUrl.length - 'data:image/jpeg;base64,'.length;
+                    const sizeInBytes = 4 * Math.ceil((stringLength / 3)) * 0.562489;
+                    const sizeInKb = (sizeInBytes / 1024).toFixed(1);
+
+                    document.getElementById('imageSizeTag').innerText = `~${sizeInKb} KB`;
+                    showToast(`Image compressed to ${sizeInKb} KB`, "info");
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function openContactModal(contactId = null) {
+            const modal = document.getElementById('contactModal');
+            const title = document.getElementById('modalTitle');
+            const form = document.getElementById('contactForm');
+
+            form.reset();
+            selectedPictureData = '';
+            document.getElementById('picturePreview').src = 'https://placehold.co/100x100/e2e8f0/64748b?text=User';
+            document.getElementById('imageSizeTag').innerText = '~0 KB';
+            document.getElementById('contactId').value = '';
+
+            if (contactId) {
+                const contact = contacts.find(c => c.id === contactId);
+                if (contact) {
+                    title.innerHTML = `<i class="fa-solid fa-user-pen text-brand-600"></i> Edit Contact`;
+                    document.getElementById('contactId').value = contact.id;
+                    document.getElementById('nameInput').value = contact.name;
+                    
+                    // Parse phone number & code
+                    if (contact.countryCode) {
+                        document.getElementById('countryCodeSelect').value = contact.countryCode;
+                    }
+                    document.getElementById('phoneInput').value = contact.rawPhone || contact.phone;
+
+                    if (contact.picture) {
+                        selectedPictureData = contact.picture;
+                        document.getElementById('picturePreview').src = contact.picture;
+                        document.getElementById('imageSizeTag').innerText = 'Saved Pic';
+                    }
+                }
+            } else {
+                title.innerHTML = `<i class="fa-solid fa-user-plus text-brand-600"></i> Add New Number`;
+            }
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.querySelector('.modal-card').classList.remove('scale-95', 'opacity-0');
+            }, 10);
+        }
+
+        function closeContactModal() {
+            const modal = document.getElementById('contactModal');
+            modal.querySelector('.modal-card').classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 150);
+        }
+
+        function saveContact(e) {
+            e.preventDefault();
+            const id = document.getElementById('contactId').value;
+            const name = document.getElementById('nameInput').value.trim();
+            const countryCode = document.getElementById('countryCodeSelect').value;
+            const rawPhone = document.getElementById('phoneInput').value.trim();
+
+            if (!name || !rawPhone) {
+                showToast("Please fill all required fields", "error");
+                return;
+            }
+
+            // Clean phone string (keep numbers only)
+            const cleanDigits = rawPhone.replace(/\D/g, '');
+            const cleanCode = countryCode.replace(/\D/g, '');
+
+            let formattedFullPhone = cleanCode + cleanDigits;
+            if (!countryCode && rawPhone.startsWith('+')) {
+                formattedFullPhone = rawPhone.replace(/\D/g, '');
+            }
+
+            if (id) {
+                // Edit existing
+                const index = contacts.findIndex(c => c.id === id);
+                if (index !== -1) {
+                    contacts[index].name = name;
+                    contacts[index].countryCode = countryCode;
+                    contacts[index].rawPhone = rawPhone;
+                    contacts[index].phone = formattedFullPhone;
+                    if (selectedPictureData) {
+                        contacts[index].picture = selectedPictureData;
+                    }
+                    showToast("Contact updated successfully!");
+                }
+            } else {
+                // Create new contact
+                const newContact = {
+                    id: 'cnt_' + Date.now(),
+                    name: name,
+                    countryCode: countryCode,
+                    rawPhone: rawPhone,
+                    phone: formattedFullPhone,
+                    picture: selectedPictureData || '',
+                    createdAt: Date.now()
+                };
+                contacts.unshift(newContact);
+                showToast("New contact saved!");
+            }
+
+            saveToLocalStorage();
+            renderContacts();
+            closeContactModal();
+        }
+
+        /* Move contact to Trash bin */
+        function moveToTrash(contactId) {
+            const index = contacts.findIndex(c => c.id === contactId);
+            if (index === -1) return;
+
+            const [deletedContact] = contacts.splice(index, 1);
+            trash.unshift({
+                id: 'trash_' + Date.now(),
+                contact: deletedContact,
+                deletedAt: Date.now()
+            });
+
+            saveToLocalStorage();
+            renderContacts();
+            showToast(`${deletedContact.name} moved to Trash`, "info");
+        }
+
+        function renderContacts(filterQuery = '') {
+            const grid = document.getElementById('contactsGrid');
+            const emptyState = document.getElementById('emptyState');
+            const countBadge = document.getElementById('contactCountBadge');
+
+            let filtered = contacts;
+            if (filterQuery) {
+                const q = filterQuery.toLowerCase();
+                filtered = contacts.filter(c => 
+                    c.name.toLowerCase().includes(q) || 
+                    c.phone.includes(q) || 
+                    (c.rawPhone && c.rawPhone.includes(q))
+                );
+            }
+
+            countBadge.innerText = filtered.length;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                emptyState.classList.add('flex');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            emptyState.classList.remove('flex');
+
+            grid.innerHTML = filtered.map(contact => {
+                const waLink = `https://wa.me/${contact.phone}`;
+                const callLink = `tel:+${contact.phone}`;
+                
+                const avatar = contact.picture 
+                    ? `<img src="${contact.picture}" onclick="openImageModal('${contact.id}')" class="w-12 h-12 rounded-2xl object-cover border border-slate-200 dark:border-slate-700 shadow-sm cursor-pointer hover:scale-105 active:scale-95 transition-transform" title="Click to view picture" alt="${escapeHtml(contact.name)}">`
+                    : `<div onclick="openImageModal('${contact.id}')" class="w-12 h-12 rounded-2xl bg-brand-100 dark:bg-brand-900/60 text-brand-700 dark:text-brand-300 flex items-center justify-center font-bold text-lg shadow-sm cursor-pointer hover:scale-105 transition-transform" title="Click to view picture">${contact.name.charAt(0).toUpperCase()}</div>`;
+
+                return `
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between relative group">
+                    
+                    <!-- Top Info & Action menu -->
+                    <div class="flex items-start justify-between gap-3 mb-3">
+                        <div class="flex items-center gap-3">
+                            ${avatar}
+                            <div class="overflow-hidden">
+                                <h3 class="font-bold text-slate-900 dark:text-white text-base truncate leading-snug">${escapeHtml(contact.name)}</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 font-mono flex items-center gap-1">
+                                    <i class="fa-solid fa-phone-flip text-[10px] text-slate-400"></i>
+                                    +${contact.phone}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- 3-Dots Card Action Menu Toggle -->
+                        <div class="relative">
+                            <button onclick="toggleCardMenu(event, '${contact.id}')" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 flex items-center justify-center transition">
+                                <i class="fa-solid fa-ellipsis-vertical text-sm"></i>
+                            </button>
+
+                            <!-- Menu Dropdown -->
+                            <div id="cardMenu_${contact.id}" class="card-menu hidden absolute right-0 mt-1 w-40 rounded-xl bg-white dark:bg-slate-800 shadow-xl border border-slate-200 dark:border-slate-700 py-1 z-20 text-xs font-semibold">
+                                <button onclick="openContactModal('${contact.id}')" class="w-full px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                                    <i class="fa-solid fa-pen text-brand-600"></i> Edit Contact
+                                </button>
+                                <button onclick="openContactModal('${contact.id}')" class="w-full px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                                    <i class="fa-solid fa-image text-blue-500"></i> Change Picture
+                                </button>
+                                <div class="border-t border-slate-100 dark:border-slate-700 my-1"></div>
+                                <button onclick="moveToTrash('${contact.id}')" class="w-full px-3 py-2 text-left hover:bg-red-50 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 flex items-center gap-2">
+                                    <i class="fa-solid fa-trash"></i> Move to Trash
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Direct Quick Action Buttons (WhatsApp & Call) -->
+                    <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-100 dark:border-slate-700/60">
+                        <a href="${waLink}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-1.5 py-2 px-3 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 font-bold text-xs rounded-xl transition active:scale-95 border border-emerald-200/50 dark:border-emerald-800/40">
+                            <i class="fa-brands fa-whatsapp text-sm text-emerald-600 dark:text-emerald-400"></i>
+                            <span>WhatsApp</span>
+                        </a>
+
+                        <a href="${callLink}" class="flex items-center justify-center gap-1.5 py-2 px-3 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-bold text-xs rounded-xl transition active:scale-95 border border-blue-200/50 dark:border-blue-800/40">
+                            <i class="fa-solid fa-phone text-xs text-blue-600 dark:text-blue-400"></i>
+                            <span>Direct Call</span>
+                        </a>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function openImageModal(contactId) {
+            const contact = contacts.find(c => c.id === contactId);
+            if (!contact) return;
+
+            const modal = document.getElementById('imageModal');
+            const enlargedImg = document.getElementById('enlargedImage');
+            const modalName = document.getElementById('imageModalName');
+            const modalPhone = document.getElementById('imageModalPhone');
+
+            modalName.innerText = contact.name;
+            modalPhone.innerText = `+${contact.phone}`;
+
+            if (contact.picture) {
+                enlargedImg.src = contact.picture;
+            } else {
+                // Fallback avatar generator
+                enlargedImg.src = `https://placehold.co/400x400/10b981/ffffff?text=${encodeURIComponent(contact.name.charAt(0).toUpperCase())}`;
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').classList.add('hidden');
+        }
+
+        function toggleCardMenu(e, id) {
+            e.stopPropagation();
+            document.querySelectorAll('.card-menu').forEach(m => {
+                if (m.id !== `cardMenu_${id}`) m.classList.add('hidden');
+            });
+            const menu = document.getElementById(`cardMenu_${id}`);
+            if (menu) menu.classList.toggle('hidden');
+        }
+
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value;
+            const clearBtn = document.getElementById('clearSearchBtn');
+            if (query.length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+            renderContacts(query);
+        }
+
+        function resetSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('clearSearchBtn').classList.add('hidden');
+            renderContacts();
+        }
+
+        function launchQuickWhatsApp() {
+            const input = document.getElementById('quickPhoneInput').value.trim();
+            if (!input) {
+                showToast("Enter phone number to chat directly", "error");
+                return;
+            }
+            const cleanDigits = input.replace(/\D/g, '');
+            if (cleanDigits.length < 5) {
+                showToast("Please enter a valid phone number", "error");
+                return;
+            }
+            window.open(`https://wa.me/${cleanDigits}`, '_blank');
+        }
+
+        function openTrashModal() {
+            renderTrashItems();
+            const modal = document.getElementById('trashModal');
+            modal.classList.remove('hidden');
+        }
+
+        function closeTrashModal() {
+            document.getElementById('trashModal').classList.add('hidden');
+        }
+
+        function updateTrashBadge() {
+            const badge = document.getElementById('trashBadge');
+            if (badge) badge.innerText = trash.length;
+        }
+
+        function renderTrashItems() {
+            const container = document.getElementById('trashContainer');
+            if (trash.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-slate-400">
+                        <i class="fa-solid fa-trash-arrow-up text-3xl mb-2 opacity-50"></i>
+                        <p class="text-sm font-medium">Trash bin is empty</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const now = Date.now();
+            const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+
+            container.innerHTML = trash.map(item => {
+                const c = item.contact;
+                const elapsed = now - item.deletedAt;
+                const daysLeft = Math.max(0, Math.ceil((THIRTY_DAYS_MS - elapsed) / (1000 * 60 * 60 * 24)));
+
+                return `
+                <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700/50 rounded-2xl border border-slate-200/80 dark:border-slate-700">
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <div class="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-600 flex items-center justify-center font-bold text-slate-600 dark:text-slate-200">
+                            ${c.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div class="overflow-hidden">
+                            <h4 class="font-bold text-sm text-slate-800 dark:text-slate-100 truncate">${escapeHtml(c.name)}</h4>
+                            <p class="text-xs text-slate-400">+${c.phone} • <span class="text-red-500 font-semibold">${daysLeft} days remaining</span></p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="restoreFromTrash('${item.id}')" title="Restore Contact" class="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-200 text-xs font-semibold transition">
+                            <i class="fa-solid fa-rotate-left"></i> Restore
+                        </button>
+                        <button onclick="deletePermanently('${item.id}')" title="Delete Permanently" class="p-2 rounded-lg bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 hover:bg-red-200 text-xs transition">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function restoreFromTrash(trashId) {
+            const index = trash.findIndex(t => t.id === trashId);
+            if (index === -1) return;
+
+            const [restoredItem] = trash.splice(index, 1);
+            contacts.unshift(restoredItem.contact);
+
+            saveToLocalStorage();
+            renderContacts();
+            renderTrashItems();
+            showToast(`Restored ${restoredItem.contact.name}`, "success");
+        }
+
+        function deletePermanently(trashId) {
+            trash = trash.filter(t => t.id !== trashId);
+            saveToLocalStorage();
+            renderTrashItems();
+            showToast("Permanently deleted item", "info");
+        }
+
+        function emptyTrashAll() {
+            if (trash.length === 0) return;
+            trash = [];
+            saveToLocalStorage();
+            renderTrashItems();
+            showToast("Trash bin emptied", "info");
+        }
+
+        function exportBackupJSON() {
+            const data = {
+                app: "WhatsDirect",
+                version: "1.0",
+                exportDate: new Date().toISOString(),
+                contacts: contacts,
+                trash: trash
+            };
+
+            const jsonStr = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `WhatsDirect_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showToast("Backup file downloaded!", "success");
+        }
+
+        function importBackupJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (parsed && Array.isArray(parsed.contacts)) {
+                        contacts = parsed.contacts;
+                        if (Array.isArray(parsed.trash)) trash = parsed.trash;
+                        
+                        saveToLocalStorage();
+                        renderContacts();
+                        showToast("Backup restored successfully!", "success");
+                    } else {
+                        showToast("Invalid backup JSON file format", "error");
+                    }
+                } catch (err) {
+                    showToast("Failed to parse JSON file", "error");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            
+            let bgClasses = 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900';
+            let icon = '<i class="fa-solid fa-circle-check text-emerald-400"></i>';
+
+            if (type === 'error') {
+                icon = '<i class="fa-solid fa-circle-exclamation text-red-400"></i>';
+            } else if (type === 'info') {
+                icon = '<i class="fa-solid fa-circle-info text-blue-400"></i>';
+            }
+
+            toast.className = `flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-xl text-xs font-semibold transition-all transform translate-y-3 opacity-0 pointer-events-auto ${bgClasses}`;
+            toast.innerHTML = `${icon} <span>${escapeHtml(message)}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-3', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-3');
+                setTimeout(() => toast.remove(), 200);
+            }, 3000);
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+    </script>
+
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('PWA Service Worker registered:', reg.scope))
+            .catch(err => console.error('PWA Service Worker registration failed:', err));
+        });
+      }
+    </script>
+</body>
+</html>
